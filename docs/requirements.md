@@ -1,3 +1,81 @@
+[🇧🇷 Versão em Português](#-versão-em-português)
+
+## 1. Overview
+
+A fleet of IoT-enabled printers distributed across multiple facilities sends operational telemetry containing metrics such as temperature and workload.
+
+Episodes of anomalous behavior have been identified, including overheating and unexpected workload variations, impacting operations.
+
+This document defines the requirements of the MVP for a near real-time anomaly detection system based on configurable per-printer thresholds, including event logging and notification to the operations team.
+
+## 2. Project Scope
+
+The MVP covers telemetry ingestion, anomaly detection based on per-printer thresholds, event counting, notification, and generation of a simple ranking based on anomaly frequency.
+
+## 3. Assumptions and Constraints
+
+The MVP must use the AWS services available in the project account, including AWS IoT Core, AWS Lambda, DynamoDB, and SNS.  
+The MVP must process messages published by printers without requiring manually managed servers.
+
+## 4. Functional Requirements
+
+### FR-01 Telemetry Ingestion  
+The system must receive and process telemetry messages sent by multiple printers via AWS IoT Core.
+
+### FR-02 Device Identification  
+Each processed message must unambiguously identify the source printer through a printer identifier.
+
+### FR-03 Metric and Value  
+Each processed message must contain a metric and an associated numeric value, enabling anomaly evaluation.
+
+### FR-04 Per-Printer Profiles  
+The system must maintain a per-printer configuration source containing acceptable reading thresholds and a sensitivity parameter for anomaly triggering.
+
+### FR-05 Threshold Evaluation  
+For each message, the system must compare the received value against the configured thresholds for the corresponding printer and determine whether the reading is within or outside the acceptable range.
+
+### FR-06 Anomaly Confirmation by Recurrence  
+The system must consider an anomaly confirmed only when consecutive violations reach or exceed the configured sensitivity parameter.
+
+### FR-07 Anomaly Logging and Counting  
+When an anomaly is confirmed, the system must log the event and update the total anomaly count associated with the printer.
+
+### FR-08 Notification to the Operations Team  
+When an anomaly is confirmed, the system must send a notification to the operations team via SNS.
+
+### FR-09 Minimum Notification Content  
+The notification must include the printer identifier and sufficient information to support initial action, including the metric and the observed value.
+
+### FR-10 Frequency-Based Ranking  
+The system must provide an ordered view of printers with the highest number of recorded anomalies in descending order, based on the data available in the MVP.
+
+## 5. Non-Functional Requirements
+
+### NFR-01 Detection Time  
+The system must be capable of issuing a notification within 5 seconds after receiving the message that confirms the anomaly under normal operating conditions.
+
+### NFR-02 Event-Driven Processing  
+The system must process telemetry on demand, triggered by message arrival events, without manual execution.
+
+### NFR-03 Reliable Counter Updates  
+The anomaly count per printer must be updated consistently, preventing lost increments in scenarios where messages arrive close in time.
+
+### NFR-04 Minimum Observability  
+The system must record logs sufficient for auditing and troubleshooting, including device identifier, metric, value, in-range or out-of-range decision, and whether an anomaly was confirmed.
+
+### NFR-05 Configuration Without Redeployment  
+Per-printer threshold configurations must be modifiable without requiring redeployment of the processing code.
+
+## 6. Security Requirements
+
+### SR-01 Publication Control  
+Only authorized devices or entities must be allowed to publish telemetry to the ingestion channel.
+
+### SR-02 Least Privilege  
+The processing component must operate with minimal permissions required to read configurations, update counters, publish notifications, and record logs.
+
+### SR-03 Notification Protection  
+The notification channel must be available only to authorized recipients.
 
 ---
 
