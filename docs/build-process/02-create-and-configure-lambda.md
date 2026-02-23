@@ -18,3 +18,57 @@ Antes de criar a lambda function, vou preparar a role e a policy que ela vai uti
   ]
 }
 ```
+
+Com isso, o AWS IoT e o Lambda podem assumir essa role para executar ações com as permissões que estiverem anexadas a ela. Rodei o comando para criar a role:
+
+`aws iam create-role --role-name role-iot-lambda --assume-role-policy-document file://backend/role-policy-iot-lambda.json`
+
+![Role in Console](../img/05-create-role.png)
+
+Também criei o json da policy de permissão em [permission-policy.json](../../backend/permission-policy.json):
+
+```
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "StmtDynamoDBAccess",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Sid": "StmtIoTAccess",
+      "Action": [
+        "iot:Connect",
+        "iot:Publish",
+        "iot:Receive",
+        "iot:Subscribe"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Sid": "StmtLogsAccess",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*"
+    }
+  ]
+}
+```
+
+Depois, executei o comando:
+
+`aws iam create-policy --policy-name permission-policy-lambda --policy-document file://backend/permission-policy-lambda.json`
+
+![Policy in console](../img/06-permission-policy.png)
