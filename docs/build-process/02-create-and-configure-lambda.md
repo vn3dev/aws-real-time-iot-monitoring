@@ -72,3 +72,9 @@ Depois, executei o comando:
 `aws iam create-policy --policy-name permission-policy-lambda --policy-document file://backend/permission-policy-lambda.json`
 
 ![Policy in console](../img/06-permission-policy.png)
+
+Anexei a policy na role usando o comando:
+
+`aws iam attach-role-policy --role-name role-iot-lambda --policy-arn arn:aws:iam::xxxxxxxxxxxxxxx:policy/permission-policy-lambda`
+
+![Policy attached to role in console](../img/06-permission-policy.png)
