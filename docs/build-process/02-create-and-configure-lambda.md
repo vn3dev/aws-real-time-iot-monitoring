@@ -113,3 +113,9 @@ Rodei um teste com o input:
 ```
 
 ![Lambda code test output](../img/10-lambda-code-test.png)
+
+Vou conferir se o log group também foi criado e se o evento ja esta sendo registrado:
+
+![CloudWatch log group page](../img/11-cloudwatch-log-group.png)
+
+![CloudWatch log stream page](../img/12-cloudwatch-log-stream.png)
