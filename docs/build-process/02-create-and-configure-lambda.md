@@ -77,4 +77,4 @@ Anexei a policy na role usando o comando:
 
 `aws iam attach-role-policy --role-name role-iot-lambda --policy-arn arn:aws:iam::xxxxxxxxxxxxxxx:policy/permission-policy-lambda`
 
-![Policy attached to role in console](../img/06-permission-policy.png)
+![Policy attached to role in console](../img/07-attached-entity.png)
