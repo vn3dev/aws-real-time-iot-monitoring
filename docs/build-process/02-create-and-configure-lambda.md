@@ -78,3 +78,24 @@ Anexei a policy na role usando o comando:
 `aws iam attach-role-policy --role-name role-iot-lambda --policy-arn arn:aws:iam::xxxxxxxxxxxxxxx:policy/permission-policy-lambda`
 
 ![Policy attached to role in console](../img/07-attached-entity.png)
+
+Para criar o Lambda por CLI, preparei a function em um arquivo.py: [lambda-function.py](../../backend/lambda-function.py). O comando para criar a function não aceita .py, para contornar isso preciso criar um pacote de deploy .zip. Tudo que fiz foi zippar o .py usando winrar e preparar o comando com o arn da role e o zip-file:
+
+```
+aws lambda create-function \
+  --function-name anomaly-detector \
+  --runtime python3.9 \
+  --role arn:aws:iam::xxxxxxxxxxxxx:role/role-iot-lambda \
+  --handler lambda_function.lambda_handler \
+  --timeout 15 \
+  --memory-size 512 \
+  --zip-file fileb://backend/lambda-function.zip
+```
+
+One-line:
+
+`aws lambda create-function --function-name anomaly-detector --runtime python3.9 --role arn:aws:iam::xxxxxxxxxxxxx:role/role-iot-lambda --handler lambda_function.lambda_handler --timeout 15 --memory-size 512 --zip-file fileb://backend/lambda-function.zip`
+
+![Lambda function page](../img/08-lambda-function-created.png)
+
+![Lambda code source](../img/09-lambda-code-source.png)
