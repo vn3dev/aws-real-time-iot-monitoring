@@ -89,7 +89,7 @@ aws lambda create-function \
   --handler lambda_function.lambda_handler \
   --timeout 15 \
   --memory-size 512 \
-  --zip-file fileb://backend/lambda-function.zip
+  --zip-file fileb://backend/lambda_function.zip
 ```
 
 One-line:
@@ -99,3 +99,17 @@ One-line:
 ![Lambda function page](../img/08-lambda-function-created.png)
 
 ![Lambda code source](../img/09-lambda-code-source.png)
+
+Rodei um teste com o input:
+
+```
+{
+  "PrinterId": "Printer1",
+  "data": {
+    "type": "temperature",
+    "value": 85
+  }
+}
+```
+
+![Lambda code test output](../img/10-lambda-code-test.png)
