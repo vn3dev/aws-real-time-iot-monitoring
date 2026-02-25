@@ -1,6 +1,6 @@
 Antes de criar a lambda function, vou preparar a role e a policy que ela vai utilizar. Como as policies podem ser lidas em json, criei um arquivo chamado [role-policy-iot-lambda.json](../../backend/role-policy-iot-lambda.json) para colocar os serviços que vou permitir. O arquivo contém:
 
-```
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -27,7 +27,7 @@ Com isso, o AWS IoT e o Lambda podem assumir essa role para executar ações com
 
 Também criei o json da policy de permissão em [permission-policy.json](../../backend/permission-policy.json):
 
-```
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -81,7 +81,7 @@ Anexei a policy na role usando o comando:
 
 Para criar o Lambda por CLI, preparei a function em um arquivo.py: [lambda-function.py](../../backend/lambda-function.py). O comando para criar a function não aceita .py, para contornar isso preciso criar um pacote de deploy .zip. Tudo que fiz foi zippar o .py usando winrar e preparar o comando com o arn da role e o zip-file:
 
-```
+```bash
 aws lambda create-function \
   --function-name anomaly-detector \
   --runtime python3.9 \
@@ -102,7 +102,7 @@ One-line:
 
 Rodei um teste com o input:
 
-```
+```json
 {
   "PrinterId": "Printer1",
   "data": {
@@ -122,7 +122,7 @@ Vou conferir se o log group também foi criado e se o evento ja esta sendo regis
 
 Agora vou prosseguir para configurar a IoT Rule. Criei a rule em um json [anomaly-rule.json](../../backend/anomaly-rule.json) para fazer via CLI. A rule ativa o Lambda function sempre que uma mensagem for publicada em um tópico anom/detect. A json contém:
 
-```
+```json
 {
     "sql": "SELECT * FROM 'anom/detect'",
     "ruleDisabled": false,
@@ -138,14 +138,31 @@ Agora vou prosseguir para configurar a IoT Rule. Criei a rule em um json [anomal
 
 Com o json criado, vou criar a rule pelo CLI:
 
-```
+```bash
 aws iot create-topic-rule \
   --rule-name anomaly_detection_lambda \
   --topic-rule-payload file://backend/anomaly-rule.json
 ```
 
-Oneline:
+One-line:
 
 `aws iot create-topic-rule --rule-name anomaly_detection_lambda --topic-rule-payload file://backend/anomaly-rule.json`
 
 ![IoT rules list page](../img/13-iot-rule-created.png)
+
+Antes de testar, preciso adicionar uma permissão no Lambda para especificar qual Iot rule a function pode invocar:
+
+```bash
+aws lambda add-permission
+  --function-name "anomaly-detector"
+  --region "us-east-1"
+  --principal iot.amazonaws.com
+  --source-arn arn:aws:iot:us-east-1:xxxxxxxxxxxx:rule/anomaly_detection_lambda
+  --source-account "xxxxxxxxxxxx"
+  --statement-id "AllowIoTInvoke"
+  --action "lambda:InvokeFunction"
+```
+
+One-line:
+
+`aws lambda add-permission --function-name "anomaly-detector" --region "us-east-1" --principal iot.amazonaws.com --source-arn arn:aws:iot:us-east-1:xxxxxxxxxxxx:rule/anomaly_detection_lambda --source-account "xxxxxxxxxxxx" --statement-id "AllowIoTInvoke" --action "lambda:InvokeFunction"`
