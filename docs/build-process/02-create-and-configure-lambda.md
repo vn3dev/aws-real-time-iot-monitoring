@@ -135,3 +135,17 @@ Agora vou prosseguir para configurar a IoT Rule. Criei a rule em um json [anomal
     ]
 }
 ```
+
+Com o json criado, vou criar a rule pelo CLI:
+
+```
+aws iot create-topic-rule \
+  --rule-name anomaly_detection_lambda \
+  --topic-rule-payload file://backend/anomaly-rule.json
+```
+
+Oneline:
+
+`aws iot create-topic-rule --rule-name anomaly_detection_lambda --topic-rule-payload file://backend/anomaly-rule.json`
+
+![IoT rules list page](../img/13-iot-rule-created.png)
