@@ -119,3 +119,19 @@ Vou conferir se o log group também foi criado e se o evento ja esta sendo regis
 ![CloudWatch log group page](../img/11-cloudwatch-log-group.png)
 
 ![CloudWatch log stream page](../img/12-cloudwatch-log-stream.png)
+
+Agora vou prosseguir para configurar a IoT Rule. Criei a rule em um json [anomaly-rule.json](../../backend/anomaly-rule.json) para fazer via CLI. A rule ativa o Lambda function sempre que uma mensagem for publicada em um tópico anom/detect. A json contém:
+
+```
+{
+    "sql": "SELECT * FROM 'anom/detect'",
+    "ruleDisabled": false,
+    "actions": [
+        {
+            "lambda": {
+                "arn:aws:lambda:us-east-1:xxxxxxxxxxxxxx:function:anomaly-detector"
+            }
+        }
+    ]
+}
+```
