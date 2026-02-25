@@ -166,3 +166,28 @@ aws lambda add-permission
 One-line:
 
 `aws lambda add-permission --function-name "anomaly-detector" --region "us-east-1" --principal iot.amazonaws.com --source-arn arn:aws:iot:us-east-1:xxxxxxxxxxxx:rule/anomaly_detection_lambda --source-account "xxxxxxxxxxxx" --statement-id "AllowIoTInvoke" --action "lambda:InvokeFunction"`
+
+Depois disso, criei dois topics e fui para o teste:
+
+![Iot topics list](../img/14-iot-topics.png)
+
+Mandei o payload pelo console:
+
+```bash
+aws iot-data publish \
+  --topic "anom/detect" \
+  --qos 1 \
+  --payload "$(echo -n '{"PrinterId": "Printer1", "data": {"type": "temperature", "value": 85}}' | base64)"
+```
+
+One-line:
+
+`aws iot-data publish --topic "anom/detect" --qos 1 --payload "$(echo -n '{"PrinterId": "Printer1", "data": {"type": "temperature", "value": 85}}' | base64)"`
+
+Resultados:
+
+![Iot topic page with message](../img/15-iot-message-success.png)
+
+![Cloudwatch log list](../img/16-cloudwatch-log.png)
+
+![Cloudwatch metrics in Lambda](../img/17-cloudwatch-metrics-lambda.png)
