@@ -209,4 +209,18 @@ aws sns subscribe \
 
 One-line:
 
-aws sns subscribe --topic-arn <topic-arn> --protocol email --notification-endpoint <email-address>
+`aws sns subscribe --topic-arn <topic-arn> --protocol email --notification-endpoint <email-address>`
+
+Para o Lambda enviar as notificações, precisei adicionar:
+
+```py
+import boto3
+
+sns = boto3.client('sns', region_name='us-east-1')
+
+sns.publish(
+    TopicArn="arn:aws:sns:us-east-1:ACCOUNT_ID:PrinterAlerts",
+    Message=f"Anomaly detected for Printer {device_id}!",
+    Subject="Printer Alert"
+)
+```
