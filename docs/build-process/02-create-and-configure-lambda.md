@@ -191,3 +191,22 @@ Resultados:
 ![Cloudwatch log list](../img/16-cloudwatch-log.png)
 
 ![Cloudwatch metrics in Lambda](../img/17-cloudwatch-metrics-lambda.png)
+
+Agora, vou modificar o Lambda para que envie uma notificação quando detectar uma anomalia. Mas antes, vou criar o topico e a inscrição no SNS:
+
+Topico:
+
+`aws sns create-topic --name PrinterAlerts`
+
+Inscrição:
+
+```bash
+aws sns subscribe \
+  --topic-arn <topic-arn> \
+  --protocol email \
+  --notification-endpoint <email-address>
+```
+
+One-line:
+
+aws sns subscribe --topic-arn <topic-arn> --protocol email --notification-endpoint <email-address>
