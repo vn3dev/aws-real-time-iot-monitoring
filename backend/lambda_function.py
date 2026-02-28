@@ -9,6 +9,8 @@ client = boto3.client("iot-data")
 # Accesses the DynamoDB table where device-specific data (such as thresholds and event counts) is stored.
 table = dynamodb.Table('PrinterProfiles')
 
+sns = boto3.client('sns', region_name='us-east-1')
+
 def lambda_handler(event, context):
     # Normalize case for PrinterId
     device_id = event.get("PrinterId").capitalize()
@@ -69,6 +71,11 @@ def iot_republish(device_id, new_record):
     event_count = int(new_record["EventCount"])
     payload = json.dumps({"PrinterId": device_id, "events": event_count})
     response = client.publish(topic="anom/pred", qos=1, payload=payload)
+    sns.publish(
+        TopicArn="arn:aws:sns:us-east-1:ACCOUNT_ID:PrinterAlerts",
+        Message=f"Anomaly detected for Printer {device_id}!",
+        Subject="Printer Alert"
+)
     return
 
 # Output generation function to scan the DynamoDB table and print device event counts
